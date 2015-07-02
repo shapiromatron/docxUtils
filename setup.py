@@ -5,7 +5,7 @@ version = '0.0.1'
 setup(name='docxUtils',
       version=version,
       description='Utility functions for python-docx library',
-      long_description=open('README.md').read(),
+      long_description=open('README.rst').read(),
       classifiers=[
           'License :: OSI Approved :: MIT License',
           'Programming Language :: Python :: 2.7',
