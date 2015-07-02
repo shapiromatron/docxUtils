@@ -17,6 +17,6 @@ setup(name='docxUtils',
       author_email='shapiromatron@gmail.com',
       url='http://github.com/shapiromatron/docxUtils',
       license='MIT',
-      py_modules=['docxUtils'],
+      packages=['docxUtils'],
       install_requires=['python-docx>=0.8.5']
 )
