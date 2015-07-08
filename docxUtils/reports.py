@@ -43,9 +43,24 @@ class DOCXReport(object):
         pass
 
     def setLandscape(self):
+        """
+        Set the document to landscape
+        """
         section = self.doc.sections[-1]
         section.orientation = WD_ORIENT.LANDSCAPE
-        section.left_margin = Inches(0.5)
-        section.right_margin = Inches(0.5)
         section.page_width = Inches(11)
         section.page_height = Inches(8.5)
+
+    def setMargins(self, left=None, right=None, top=None, bottom=None):
+        """
+        Set the margins on the page, in inches.
+        """
+        section = self.doc.sections[-1]
+        if left:
+            section.left_margin = Inches(left)
+        if right:
+            section.right_margin = Inches(right)
+        if top:
+            section.top_margin = Inches(top)
+        if bottom:
+            section.bottom_margin = Inches(bottom)
