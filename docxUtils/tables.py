@@ -39,7 +39,7 @@ class TableMaker(object):
             cell.render(tbl)
 
         # mark rows as headers to break on pages
-        if self.numHeaders>=1:
+        if self.numHeaders >= 1:
             for i in xrange(self.numHeaders):
                 tblHeader = docx.oxml.parse_xml(r'<w:tblHeader {} />'.format(
                     docx.oxml.ns.nsdecls('w')))
@@ -83,71 +83,41 @@ class TableMaker(object):
         else:
             return self.colWidths[col]
 
-    def new_tbl_title(self, text, style=None):
-        for i, row in enumerate(self.colWidths):
-            if i == 0:
-                cell = {
-                    "row": 0,
-                    "col": i,
-                    "colspan": self.cols,
-                    "width": sum(self.colWidths),
-                    "text": text
-                }
-                style = self.get_style(style=style, default="title")
-                if style:
-                    cell["style"] = style
-            else:
-                cell = {
-                    "row": 0,
-                    "col": i,
-                    "width": self.colWidths[i],
-                    "text": ""
-                }
-            self._add_cell(CellMaker(**cell))
-
-    def new_th(self, row, col, text, colspan=None, rowspan=None, style=None):
-        cell = {"row": row, "col": col}
-        if rowspan:
-            cell["rowspan"] = rowspan
-        if colspan:
-            cell["colspan"] = colspan
-        cell["width"] = self._get_width(col, colspan)
-        style = self.get_style(style=style, default="header")
-        if style:
-            cell["style"] = style
-        if style:
-            cell["text"] = text
-            cell["style"] = style
+    def new_th(self, row, col, text, *arg, **kw):
+        kw.update(
+            row=row,
+            col=col,
+            width=self._get_width(col, kw.get('colspan')),
+            style=self.get_style(style=kw.get('style'))
+        )
+        if kw["style"]:
+            kw["text"] = text
         else:
-            cell["runs"] = [{"text": text, "bold": True, "italic": False}]
-        return self._add_cell(CellMaker(**cell))
+            kw["runs"] = [TableMaker.new_run(text, b=True, newline=False)]
+        return self._add_cell(CellMaker(**kw))
 
-    def new_td_txt(self, row, col, text, rowspan=None, colspan=None, style=None):
-        cell = {"row": row, "col": col, "text": text}
-        if rowspan:
-            cell["rowspan"] = rowspan
-        if colspan:
-            cell["colspan"] = colspan
-        cell["width"] = self._get_width(col, colspan)
-        style = self.get_style(style=style, default="body")
-        if style:
-            cell["style"] = style
-        return self._add_cell(CellMaker(**cell))
+    def new_td_txt(self, row, col, text, *arg, **kw):
+        kw.update(
+            text=text,
+            row=row,
+            col=col,
+            width=self._get_width(col, kw.get('colspan')),
+            style=self.get_style(style=kw.get('style'), default="body")
+        )
+        return self._add_cell(CellMaker(**kw))
 
-    def new_td_run(self, row, col, runs, rowspan=None, colspan=None, style=None):
-        cell = {"row": row, "col": col, "runs": runs}
-        if rowspan:
-            cell["rowspan"] = rowspan
-        if colspan:
-            cell["colspan"] = colspan
-        cell["width"] = self._get_width(col, colspan)
-        style = self.get_style(style=style, default="body")
-        if style:
-            cell["style"] = style
-        return self._add_cell(CellMaker(**cell))
+    def new_td_run(self, row, col, runs, *arg, **kw):
+        kw.update(
+            runs=runs,
+            row=row,
+            col=col,
+            width=self._get_width(col, kw.get('colspan')),
+            style=self.get_style(style=kw.get('style'), default="body")
+        )
+        return self._add_cell(CellMaker(**kw))
 
     @classmethod
-    def new_run(cls, txt, newline=True, style=None, b=False, i=False):
+    def new_run(cls, txt, b=False, i=False, newline=True, style=None):
         if newline:
             txt += u"\n"
         return {"text": txt, "style": style, "bold": b, "italic": i}
@@ -213,6 +183,4 @@ class CellMaker(object):
                 run = p.add_run(runD["text"])
                 run.bold = runD.get("bold", False)
                 run.italic = runD.get("italic", False)
-                style = runD.get("style", None)
-                if style:
-                    run.style = style
+                run.style = runD.get("style", None)
