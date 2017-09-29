@@ -17,8 +17,12 @@ class DOCXReport(object):
         """
         Build DOCX report, create content, return file in BytesIO format
         """
-        fn = os.path.join(self.root_path, self.get_template_fn())
-        self.doc = Document(fn)
+        if self.root_path is None:
+            self.doc = Document()
+        else:
+            fn = os.path.join(self.root_path, self.get_template_fn())
+            self.doc = Document(fn)
+
         self.create_content()
 
         docx = BytesIO()
@@ -26,6 +30,10 @@ class DOCXReport(object):
         docx.seek(0)
 
         return docx
+
+    def save_report(self, buffer, fn):
+        with open(fn, 'wb') as f:
+            f.write(buffer.getvalue())
 
     @abc.abstractmethod
     def get_template_fn(self):
