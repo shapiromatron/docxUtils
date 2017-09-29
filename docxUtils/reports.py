@@ -1,6 +1,6 @@
 import abc
 import os
-from StringIO import StringIO
+from io import BytesIO
 
 from docx import Document
 from docx.shared import Inches
@@ -15,13 +15,13 @@ class DOCXReport(object):
 
     def build_report(self):
         """
-        Build DOCX report, create content, return file in StringIO format
+        Build DOCX report, create content, return file in BytesIO format
         """
         fn = os.path.join(self.root_path, self.get_template_fn())
         self.doc = Document(fn)
         self.create_content()
 
-        docx = StringIO()
+        docx = BytesIO()
         self.doc.save(docx)
         docx.seek(0)
 

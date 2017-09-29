@@ -40,7 +40,7 @@ class TableMaker(object):
 
         # mark rows as headers to break on pages
         if self.numHeaders >= 1:
-            for i in xrange(self.numHeaders):
+            for i in range(self.numHeaders):
                 tblHeader = docx.oxml.parse_xml(r'<w:tblHeader {} />'.format(
                     docx.oxml.ns.nsdecls('w')))
                 tbl.rows[i]._tr.get_or_add_trPr().append(tblHeader)
