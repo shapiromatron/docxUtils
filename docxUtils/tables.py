@@ -1,4 +1,5 @@
 import docx
+from docx.oxml.shared import OxmlElement, qn
 
 
 class TableMaker(object):
@@ -142,6 +143,7 @@ class CellMaker(object):
                 - shade: str
                 - text: str
                 - runs: list of dictionaries
+                - vertical: bool
 
         """
         self.__dict__.update(kw)
@@ -168,9 +170,18 @@ class CellMaker(object):
         # add shading
         shade = getattr(self, "shade", None)
         if shade:
-            shade_elm = docx.oxml.parse_xml(r'<w:shd {} w:fill="{}"/>'.format(
-                docx.oxml.ns.nsdecls('w'), shade))
-            cellD._tc.get_or_add_tcPr().append(shade_elm)
+            tcPr = cellD._tc.get_or_add_tcPr()
+            tcVAlign = OxmlElement('w:shd')
+            tcVAlign.set(qn('w:fill'), shade)
+            tcPr.append(tcVAlign)
+
+        # change text rotation
+        vertical = getattr(self, "vertical", False)
+        if vertical:
+            tcPr = cellD._tc.get_or_add_tcPr()
+            tcVAlign = OxmlElement('w:textDirection')
+            tcVAlign.set(qn('w:val'), "btLr")
+            tcPr.append(tcVAlign)
 
         # add content
         text = getattr(self, "text", None)
