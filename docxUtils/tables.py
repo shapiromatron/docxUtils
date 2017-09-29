@@ -1,5 +1,6 @@
 import docx
 from docx.oxml.shared import OxmlElement, qn
+from docx.shared import Inches
 
 
 class TableMaker(object):
@@ -144,6 +145,7 @@ class CellMaker(object):
                 - text: str
                 - runs: list of dictionaries
                 - vertical: bool
+                - height: float
 
         """
         self.__dict__.update(kw)
@@ -182,6 +184,14 @@ class CellMaker(object):
             tcVAlign = OxmlElement('w:textDirection')
             tcVAlign.set(qn('w:val'), "btLr")
             tcPr.append(tcVAlign)
+
+        height = getattr(self, "height", False)
+        if height:
+            tcPr = cellD._tc.get_or_add_tcPr()
+            trHeight = OxmlElement('w:trHeight')
+            trHeight.set(qn('w:val'), str(Inches(float(height))))
+            trHeight.set(qn('w:hRule'), 'atLeast')
+            tcPr.append(trHeight)
 
         # add content
         text = getattr(self, "text", None)

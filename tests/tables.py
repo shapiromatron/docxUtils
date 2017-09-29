@@ -26,7 +26,7 @@ class TableTester(DOCXReport):
         # fills and alignments
         tbl.new_td_txt(3, 0, 'F', shade='#57CF52')
         tbl.new_td_txt(3, 1, 'G')
-        tbl.new_td_txt(3, 2, 'Vertical', vertical=True)
+        tbl.new_td_txt(3, 2, 'Vertical', vertical=True, height=1)
 
         # render
         tbl.render(self.doc)
